@@ -5,7 +5,6 @@ import urllib, urllib2, cookielib, re, sys, threading
 
 myemail = ''
 mypassword = ''
-myid = ''
 
 class  Renren(threading.Thread):
 
@@ -15,11 +14,6 @@ class  Renren(threading.Thread):
         self.origURL='http://www.renren.com/Home.do'
         self.domain='renren.com'
         self.cj = cookielib.LWPCookieJar()
-
-        try:
-            self.cj.revert('renren,cookie')
-        except:
-            None
 
         self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.cj))
         urllib2.install_opener(self.opener)
@@ -31,6 +25,7 @@ class  Renren(threading.Thread):
             urllib.urlencode(params)      
         )
         r = self.opener.open(req)
+        self.myid = re.search(r'http://www.renren.com/(\d+)', r.geturl()).group(1)
 
     def friends(self):
         print "Get my friends"
@@ -108,7 +103,7 @@ class  Renren(threading.Thread):
 
 		while True:
 			count1 = str(count)
-			req="http://friend.renren.com/GetFriendList.do?curpage="+count1+'&id='+str(myid)
+			req="http://friend.renren.com/GetFriendList.do?curpage="+count1+'&id='+str(self.myid)
 			print 'Get',req
 			r=self.opener.open(req)
 			data=r.read()
